@@ -100,6 +100,7 @@ export const login = async (req, res) => {
             maxAge: 1000 * 60 * 60 * 24 * 7
         })
         res.status(200).json({
+            success: true,
             message: "login successfully",
             user: {
                 id: user.id,
@@ -120,7 +121,42 @@ export const login = async (req, res) => {
 }
 
 
-export const logout = async () => {}
+export const logout = async (req,res) => {
+    try {
+        res.clearCookie("jwt", {
+             httpOnly: true,
+            sameSite: "strict",
+            secure: process.env.NODE_ENV !== "development"
+           
+        })
+        res.status(200).json({
+            success: true,
+            massage: "logout successfully"
+        })
+        
+    } catch (error) {
+        console.error("error logout in user", error);
+        res.status(500).json({
+            error: "logout in user error"
+        })
+        
+    }
 
-export const check = async () => {}
+}
+
+export const check = async (req, res) => {
+    try {
+        res.status(200).json({
+            success: true,
+            user: req.user
+        });
+        
+    } catch (error) {
+        console.error("error checking user", error);
+        res.status(500).json({
+            error: "checking user error"
+        })
+        
+    }
+}
 
