@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cookieparser from "cookie-parser";
 
 import authRoutes from "./routes/auth.route.js";
+import problemRoutes from "./routes/problem.route.js";
 
 dotenv.config();
 
@@ -22,6 +23,8 @@ app.get('/Adi', (req, res) => {
 })
 
 app.use ("/api/v1/auth", authRoutes)
+app.use ("/api/v1/problems",problemRoutes)
+
 
 
 app.listen(process.env.PORT, () => {

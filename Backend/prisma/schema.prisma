@@ -30,42 +30,31 @@ model User {
   role     UserRole @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  problems Problem[]
 }
 
-model problem {
-  id String @id @default(uuid())
-  email String @unique
-  image String?
-  role UserRole @default(USER)
-  password String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-}
 
 model Problem {
   id String @id @default(uuid())
-  titale String
+  title String
   description String
   difficulty difficulty 
   tags String[]
   userid String
-  example  json
-  constraints json
+  example Json
+  constraints Json
   hints String?
+  
+  editorial Json
 
-
-  editorial json
-  codeSnippets json
-  referencesSolutions json
+  testcases Json
+  codeSnippets Json
+  referencesSolutions Json
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // relationship
-
-  user User @relation(fields: [userid], references: [id], onDelete: Cascade)  
-
-
+  user User @relation(fields: [userid], references: [id], onDelete: Cascade)
 
 }
