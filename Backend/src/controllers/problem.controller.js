@@ -4,12 +4,12 @@ import { getjudge0LanguageId, pollBatchResults, submitBatch } from '../libs/judg
 export const createProblem = async (req, res) => {
     try {
         // Get all data from the request body
-        const { title, description, difficulty, tags, example, constraints, testcases, codeSnippets, referencesSolutions } = req.body;
+        const { title, description, difficulty, tags, examples, constraints, testcases, codeSnippets, referencesSolutions } = req.body;
         
         // Validate required fields
-        if (!title || !description || !difficulty || !testcases || !referencesSolutions) {
+        if (!title || !description || !difficulty || !examples || !testcases || !referencesSolutions) {
             return res.status(400).json({ 
-                message: 'Missing required fields. Please provide title, description, difficulty, testcases, and referencesSolutions' 
+                message: 'Missing required fields. Please provide title, description, difficulty, examples, testcases, and referencesSolutions' 
             });
         }
         
@@ -30,7 +30,7 @@ export const createProblem = async (req, res) => {
         }
         
         // Check if JUDGE0_API_URL is configured
-        if (!process.env.JUDGE0_API_URL) {
+        if (!process.env.SULU_API_URL) {
             return res.status(500).json({ message: 'Judge0 API URL is not configured' });
         }
         
@@ -94,12 +94,12 @@ export const createProblem = async (req, res) => {
                 description,
                 difficulty,
                 tags,
-                example,
+                example: examples,
                 constraints,
                 testcases,
                 codeSnippets,
                 referencesSolutions,
-                userId: req.user.id
+                userid: req.user.id
             }
         });
         
@@ -118,7 +118,7 @@ export const createProblem = async (req, res) => {
 }
 
 
-export const getallproblems = async (req, res) => {}
+export const getAllproblems = async (req, res) => {}
 
 
 export const getProblemById = async (req, res) => {} 
@@ -130,4 +130,4 @@ export const updateProblem = async (req, res) => {}
 export const deleteProblem = async (req, res) => {}
 
 
-export const getallproblemsSolvedbyUser = async (req, res) => {}
+export const getAllproblemsSolvedbyUser = async (req, res) => {}
