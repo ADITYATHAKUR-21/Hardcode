@@ -75,13 +75,66 @@ try {
 
    
 
-export const getAllproblems = async (req, res) => {}
+export const getAllproblems = async (req, res) => {
+  try {
+    const problem = await db.problem.findMany()
+
+    if(!problem){
+      return res.status(404).json({
+        error: "Can not find problem"
+      })
+
+    }
+    res.status(200).json({
+      sucess: true,
+      message: "problem fetched successfully",
+      problem
+    })
+    
+  } catch (error) {
+      console.error("error fetch problem", error);
+      res.status(500).json({
+      error: "fatch problem error"
+    })
+    
+  }
+};
 
 
-export const getProblemById = async (req, res) => {} 
+export const getProblemById = async (req, res) => {
+  const {id} = req.params;
+  try {
+    const problem = await db.problem.finduniqe({
+      where:{
+        id
+      }
+    });
+
+    if(!problem){
+      return res.status(400).json({
+        error: "problem id is not fatch"
+      })
+
+    }
+    res.status(200).json({
+      sucess: true,
+      message: "problem fetched successfully",
+      problem
+    })
+
+  } catch (error) {
+    console.error("error fetch ProblemById", error);
+      res.status(500).json({
+      error: "fatch ProblemById error"
+    })
+    
+  }
+} 
 
 
-export const updateProblem = async (req, res) => {}
+export const updateProblem = async (req, res) => {
+  
+}
 
 
 export const deleteProblem = async (req, res) => {}
