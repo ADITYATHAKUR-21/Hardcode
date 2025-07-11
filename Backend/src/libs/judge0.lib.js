@@ -54,9 +54,11 @@ export const submitBatch = async (submissions) => {
             Authorization: process.env.SULU_API_KEY
         },
         data:{
+            
             submissions
         }
     })
+    
 
     console.log("submissions results", data);
 
