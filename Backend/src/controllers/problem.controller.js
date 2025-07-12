@@ -1,4 +1,4 @@
-import { db } from '../libs/db.js';
+import {db} from '../libs/db.js';
 import { getjudge0LanguageId, pollBatchResults, submitBatch } from '../libs/judge0.lib.js';
 
 export const createProblem = async (req, res) => {
@@ -77,7 +77,7 @@ try {
 
 export const getAllproblems = async (req, res) => {
   try {
-    const problem = await db.problem.findMany()
+    const problem = await db.problem.findMany();
 
     if(!problem){
       return res.status(404).json({
@@ -104,7 +104,7 @@ export const getAllproblems = async (req, res) => {
 export const getProblemById = async (req, res) => {
   const {id} = req.params;
   try {
-    const problem = await db.problem.finduniqe({
+    const problem = await db.problem.findUnique({
       where:{
         id
       }
@@ -133,11 +133,102 @@ export const getProblemById = async (req, res) => {
 
 
 export const updateProblem = async (req, res) => {
+  const {id} = req.params;
+
+       const { title, description, difficulty, tags, example, constraints, hints, editorial, testcases,
+         codeSnippets, referencesSolutions, } = req.body;
+
+if(req.user.role !== "ADMIN"){
+  return res.status(403).json({error : "Only admin allow  create a problem"})
+}
+
+try {
+  // Validate all reference solutions first
+  if (referencesSolutions && typeof referencesSolutions === 'object') {
+    for(const [language, solutioncode] of Object.entries(referencesSolutions)){
+      const languageId = getjudge0LanguageId(language);
+
+    const submissions = testcases.map(({input, output}) => ({
+      source_code: solutioncode,
+      language_id: languageId,
+      stdin: input,
+      expected_output: output
+    }))
+    const submissionsResult = await submitBatch(submissions)
+    const tokens = submissionsResult.map((res)=> res.token);
+    const result = await pollBatchResults(tokens);
+
+    for(let i = 0; i < result.length; i++){
+      const testResult = result[i];
+
+      if(testResult.status.id !== 3){
+        return res.status(400).json({error :`testcase ${i+1} failed for language ${language}`});
+      }
+    }
+  }
+}
+
+  // If all validations pass, create the problem
+  const updatedProblem = await db.problem.update({
+    where: {id},
+    data: {
+      title,
+      description,
+      difficulty,
+      tags,
+      example,
+      constraints,
+      hints,
+      editorial,
+      testcases,
+      codeSnippets,
+      referencesSolutions,
+      userid : req.user.id,
+    
+    }
+  })
   
+  return res.status(200).json({message: "problem updated successfully" })
+} catch (error) {
+  console.error("error Updateing problem", error);
+  res.status(500).json({
+    error: "Updateing problem error"
+  })
+}
+
+}
+ 
+
+
+export const deleteProblem = async (req, res) => {
+  const {id} = req.params;
+
+  try {
+    const problem = await db.problem.findUnique({
+      where : {id}
+    });
+    if(!problem){
+      return res.status(404).json({
+        error: "problem not found"
+      })
+    }
+    await db.problem.delete({where:{id}});
+
+    res.status(200).json({
+      massage: "problem delete sucessfully"
+    })
+
+
+  } catch (error) {
+      console.error("error deleteing Problem", error);
+      res.status(500).json({
+      error: "Delete Problem error"
+    })
+    
+  }
 }
 
 
-export const deleteProblem = async (req, res) => {}
+export const getAllproblemsSolvedbyUser = async (req, res) => {
 
-
-export const getAllproblemsSolvedbyUser = async (req, res) => {}
+}
