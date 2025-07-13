@@ -4,7 +4,7 @@ import cookieparser from "cookie-parser";
 
 import authRoutes from "./routes/auth.route.js";
 import problemRoutes from "./routes/problem.route.js";
-import executionRoutes from "./routes/excutionCode.route.js";
+import executionRoutes from "./routes/executionCode.route.js";
 
 dotenv.config();
 

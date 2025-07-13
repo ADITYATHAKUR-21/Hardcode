@@ -1,5 +1,5 @@
 import { decodeBase64 } from "bcryptjs";
-import {db} from "../libs/db.js"
+
 import { pollBatchResults, submitBatch } from "../libs/judge0.lib.js";
 
 
