@@ -1,6 +1,7 @@
 import { decodeBase64 } from "bcryptjs";
 
 import { getLanguageName, pollBatchResults, submitBatch } from "../libs/judge0.lib.js";
+import { db } from "../libs/db.js"; // Add missing db import
 
 
 
@@ -22,7 +23,7 @@ export const executCode = async (req,res) => {
             !Array.isArray(stdin) || !stdin.length === 0 || !Array.isArray(exepected_outputs)
             || exepected_outputs.length !== stdin.length
         ){
-            return res.ststus(404).json({error:"Invalid or missing test cases"})
+            return res.status(404).json({error:"Invalid or missing test cases"})
         }
 
         // 2 perper each test cases for judeg 0 batch submission
@@ -47,22 +48,39 @@ export const executCode = async (req,res) => {
         const results = await pollBatchResults(tokens);
 
 
-        console.log("result-------->", results);
+        console.log("result------->", JSON.stringify(results, null, 2));
 
         let allPassed = true;
 
 // 5 return result
         const detailedResult = results.map((result, i) => {
-            const stdout = result.stdout?.trim();
-            const expectedOutput = exepected_outputs[i]?.trim();
+            console.log(`Processing test case ${i + 1}:`, {
+                stdout: result.stdout,
+                stderr: result.stderr,
+                status: result.status,
+                expected: exepected_outputs[i]
+            });
+            
+            const stdout = result.stdout !== null && result.stdout !== undefined ? result.stdout.trim() : '';
+            const expectedOutput = exepected_outputs[i] ? exepected_outputs[i].trim() : '';
             const passed = stdout === expectedOutput;
 
-            if(!passed) allPassed = false;
+            if(!passed) {
+                allPassed = false;
+                console.log(`Test case ${i + 1} failed:`, {
+                    actual: stdout,
+                    expected: expectedOutput,
+                    actualType: typeof stdout,
+                    expectedType: typeof expectedOutput,
+                    rawStdout: result.stdout,
+                    rawStdoutType: typeof result.stdout
+                });
+            }
 
             return {
                 testcase: i + 1,
                 passed,
-                stdout,
+                stdout: stdout || null,
                 expected: expectedOutput,
                 stderr: result.stderr || null,
                 compileOutput: result.compile_output || null,
@@ -74,22 +92,11 @@ export const executCode = async (req,res) => {
         
         console.log(detailedResult);
         
-        res.status(200).json({
-            message: "code executed",
-            allPassed,
-            testResults: detailedResult,
-            summary: {
-                total: detailedResult.length,
-                passed: detailedResult.filter(test => test.passed).length,
-                failed: detailedResult.filter(test => !test.passed).length
-            }
-        })
-
         // 6 save submission
         const submission = await db.submission.create({
             data:{
-                userId,
-                problemId: problemid,
+                userid: userId,
+                problemid: problemid,
                 sourceCode: source_code,
                 language: getLanguageName(language_id),
                 stdin: stdin.join("\n"),
@@ -114,22 +121,22 @@ export const executCode = async (req,res) => {
         if(allPassed){
             await db.problemSolved.upsert({
                 where: {
-                    userId_problemId:{
-                        userId, problemId: problemid
+                    userid_problemid:{
+                        userid: userId, problemid: problemid
                     }
                 },
                 update:{},
                 create:{
-                    userId,
-                    problemId: problemid
+                    userid: userId,
+                    problemid: problemid
                 }
             })
 
         }
        // 8 save individul test case result
        const TastCaseResult = detailedResult.map((result) => ({
-           submissionId: submission.id,
-           testcase: result.testcase,
+           submissionid: submission.id,
+           testcases: result.testcase,
            passed: result.passed,
            stdout: result.stdout,
            expected: result.expected,
@@ -144,24 +151,25 @@ export const executCode = async (req,res) => {
         data: TastCaseResult
      })
 
-     const submissionwithTastcase = await db.submission.findUnique({
-        weher:{
-            id: submission.id
-        },
-        include: {
-            TastCaseResult: true
-        }
-     })
      res.status(200).json({
         success: true,
-        massage:"code executed successfully!",
-        submission: submissionwithTastcase
+        message: "code executed successfully!",
+        allPassed,
+        testResults: detailedResult,
+        summary: {
+            total: detailedResult.length,
+            passed: detailedResult.filter(test => test.passed).length,
+            failed: detailedResult.filter(test => !test.passed).length
+        },
+        submissionId: submission.id
      })
      
      } catch (error) {
-        console.log("executCode fail");
-        res.status(404).json({
-            error: "code  execute fail"
+        console.log("executCode fail - Error details:", error);
+        console.log("Error stack:", error.stack);
+        res.status(500).json({
+            error: "code execute fail",
+            details: error.message
         })
 
     }
