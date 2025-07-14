@@ -5,6 +5,7 @@ import cookieparser from "cookie-parser";
 import authRoutes from "./routes/auth.route.js";
 import problemRoutes from "./routes/problem.route.js";
 import executionRoutes from "./routes/executionCode.route.js";
+import submissionRoutes from "./routes/submission.route.js";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.get('/Adi', (req, res) => {
 app.use ("/api/v1/auth", authRoutes)
 app.use ("/api/v1/problems",problemRoutes)
 app.use ("/api/v1/execute-code", executionRoutes)
+app.use ("/api/v1/submission", submissionRoutes)
 
 
 
