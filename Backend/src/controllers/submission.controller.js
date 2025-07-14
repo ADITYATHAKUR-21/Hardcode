@@ -7,21 +7,21 @@ export const getAllSubmission = async (req, res) => {
 
         const submission = await db.submission.findMany({
             where: {
-                userId:  userId
+                userid:  userId
             }
 
-        }) 
+        })
         
 
         res.status(200).json({
             success: true,
-            massage: "Submissions fatched successfully",
+            message: "Submissions fetched successfully",
             submission
         })
     } catch (error) {
-        console.log("error: Submissions fatching erorr");
+        console.log("error: Submissions fetching error", error);
         res.status(500).json({
-            massage: "fail to fatch submissions"
+            message: "fail to fetch submissions"
         })
         
     }
@@ -33,24 +33,24 @@ export const getSubmissionsForProblem = async (req, res) => {
         const userId = req.user.id;
         const problemId = req.params.problemId;
 
-        const submissions = await db.submission.findmany({
+        const submissions = await db.submission.findMany({
             where:{
-                userId: userId,
-                problemId: problemId
+                userid: userId,
+                problemid: problemId
             }
         })
 
         res.status(200).json({
             success: true,
-            massage: "Submissions fatched successfully",
+            message: "Submissions fetched successfully",
             submissions
         })
 
         
     } catch (error) {
-        console.log("error: Submissions fatching erorr");
+        console.log("error: Submissions fetching error");
         res.status(500).json({
-            massage: "fail to fatch submissions"
+            message: "fail to fetch submissions"
         })
         
     }
@@ -63,21 +63,21 @@ export const getAllTheSubmissionsForProblem = async (req, res) => {
 
         const submission =  await db.submission.count({
             where:{
-                problemId: problemId
+                problemid: problemId
             }
 
         })
 
         res.status(200).json({
             success: true,
-            massage: "submissions fatched successfully",
+            message: "submissions fetched successfully",
             count: submission
         })
         
     } catch (error) {
-        console.log("error: Submissions fatching erorr");
+        console.log("error: Submissions fetching error");
         res.status(500).json({
-            massage: "fail to fatch submissions"
+            message: "fail to fetch submissions"
         })
     }
 
