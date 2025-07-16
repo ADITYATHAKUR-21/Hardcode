@@ -3,6 +3,7 @@ import { authMiddleware } from "../middleware/auth.middleware.js";
 import { addProblemToPlaylist, createPlaylist, deletePlaylist,  getAllplaylistDetails,  getplaylistDetails, removeproblemFromPlaylist } from "../controllers/playlist.controller.js";
 
 
+
 const playlistRoutes = express.Router();
 
 playlistRoutes.get("/", authMiddleware, getAllplaylistDetails);
