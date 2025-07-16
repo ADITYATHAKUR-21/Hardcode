@@ -9,15 +9,26 @@ export const executCode = async (req,res) => {
     try {
         const {source_code, language_id, stdin, exepected_outputs, problemid} = req.body;
 
-        if(!source_code, !language_id, !stdin, !exepected_outputs, !problemid){
-            return res.status(404).json({
-                error: "all field are required"
+        if(!source_code || !language_id || !stdin || !exepected_outputs || !problemid){
+            return res.status(400).json({
+                error: "all fields are required"
             })
         }
 
         const userId = req.user.id;
 
-         // 1 validate test cases
+        // 1 validate problemid exists
+        const problemExists = await db.problem.findUnique({
+            where: { id: problemid }
+        });
+        
+        if (!problemExists) {
+            return res.status(404).json({
+                error: "Problem not found. Please provide a valid problem ID."
+            });
+        }
+
+         // 2 validate test cases
 
         if(
             !Array.isArray(stdin) || !stdin.length === 0 || !Array.isArray(exepected_outputs)
@@ -26,7 +37,7 @@ export const executCode = async (req,res) => {
             return res.status(404).json({error:"Invalid or missing test cases"})
         }
 
-        // 2 perper each test cases for judeg 0 batch submission
+        // 3 perper each test cases for judeg 0 batch submission
 
         const submissions = stdin.map((input) =>({
             source_code,
@@ -37,13 +48,13 @@ export const executCode = async (req,res) => {
 
         }));
 
-        // 3 send batch of sumissions to judeg0
+        // 4 send batch of sumissions to judeg0
 
         const submitResponse = await submitBatch(submissions);
 
         const tokens = submitResponse.map((res) => res.token)
 
-        // 4 pull judeg0 for result of  all submited tast cases
+        // 5 pull judeg0 for result of  all submited tast cases
 
         const results = await pollBatchResults(tokens);
 
@@ -52,7 +63,7 @@ export const executCode = async (req,res) => {
 
         let allPassed = true;
 
-// 5 return result
+// 6 return result
         const detailedResult = results.map((result, i) => {
             console.log(`Processing test case ${i + 1}:`, {
                 stdout: result.stdout,
@@ -92,7 +103,7 @@ export const executCode = async (req,res) => {
         
         console.log(detailedResult);
         
-        // 6 save submission
+        // 7 save submission
         const submission = await db.submission.create({
             data:{
                 userid: userId,
@@ -117,7 +128,7 @@ export const executCode = async (req,res) => {
             }
         })
 
-       // 7 save problem solved
+       // 8 save problem solved
         if(allPassed){
             await db.problemSolved.upsert({
                 where: {
@@ -133,7 +144,7 @@ export const executCode = async (req,res) => {
             })
 
         }
-       // 8 save individul test case result
+       // 9 save individul test case result
        const TastCaseResult = detailedResult.map((result) => ({
            submissionid: submission.id,
            testcases: result.testcase,

@@ -2,12 +2,12 @@ import {db } from "../libs/db.js"
 
 export const getAllplaylistDetails = async (req,res) =>{
      try {
-        const playlists = await db.playlist.findMany({
+        const playlists = await db.playlists.findMany({
             where:{
-                userId: req.user.id
+                userid: req.user.id
             },
             include:{
-                promblems: {
+                problems: {
                     include: {
                         problem: true
                     }
@@ -35,14 +35,14 @@ export const getplaylistDetails = async (req,res) =>{
 
     const {playlistId} = req.params;
       try {
-        const playlist = await db.playlist.findUnique({
+        const playlist = await db.playlists.findUnique({
             where: {
                 id: playlistId,
-                userId: req.user.id
+                userid: req.user.id
 
             },
             include: {
-                promblems: {
+                problems: {
                     include: {
                         problem: true
                     }
@@ -51,7 +51,7 @@ export const getplaylistDetails = async (req,res) =>{
         });
 
         if(!playlist){
-            res.status(404).json({
+            return res.status(404).json({
                 error: "playlist not found"
             })
         }
@@ -62,20 +62,26 @@ export const getplaylistDetails = async (req,res) =>{
         })
         
       } catch (error) {
-        
+        console.error("error fetching playlist details", error);
+        res.status(500).json({
+            error: "fetching playlist details error"
+        })
       }
    
 }
 
 export const createPlaylist = async (req,res) => {
     try {
-        const {name, description} =  req.body;
+        
+        const {name, description} = req.body;
+        
+    
 
         const userId = req.user.id;
 
-        const playlist = await db.playlist.create({
+        const playlist = await db.playlists.create({
             data : {
-                userId: userId,
+                userid: userId,
                 name,
                 description
             }
@@ -101,26 +107,37 @@ export const addProblemToPlaylist = async (req,res) => {
     const {problemIds} = req.body;
 
     try {
+        console.log("Full req.params:", req.params);
+        console.log("Full req.body:", req.body);
+        console.log("Request data:", { playlistId, problemIds });
+        
         if(!Array.isArray(problemIds)) {
-            res.status(400).json({
+            return res.status(400).json({
                 error: "problemIds must be an array"
             })
         }
 
-        // record for each problem in playlist
-        const problemsInPlaylist = await db.problemsInPlaylist.createMany({
-           data: problemIds.map((problemId) => ({
-            playlistId,
-            problemId
+        if(problemIds.length === 0) {
+            return res.status(400).json({
+                error: "problemIds array cannot be empty"
+            })
+        }
 
+        // record for each problem in playlist
+        const problemsInPlaylist = await db.problemInPlaylist.createMany({
+           data: problemIds.map((problemId) => ({
+            playlistid: playlistId,
+            problemid: problemId
            }))
         })
 
-        if(!problemsInPlaylist) {
-            res.status(500).json({
+        console.log("Database result:", problemsInPlaylist);
+
+        // createMany returns an object with count property, not null/undefined
+        if(!problemsInPlaylist || problemsInPlaylist.count === 0) {
+            return res.status(500).json({
                 error: "adding problem to playlist error"
             })
-
         }
 
         res.status(201).json({
@@ -131,6 +148,7 @@ export const addProblemToPlaylist = async (req,res) => {
 
         
     } catch (error) {
+        console.error("Error in addProblemToPlaylist:", error);
         res.status(500).json({
             error: "adding problem to playlist error"
         })
@@ -142,10 +160,10 @@ export const deletePlaylist = async (req,res)  => {
     const {playlistId} = req.params;
 
     try {
-        const deletedPlaylist = await db.playlist.delete({
+        const deletedPlaylist = await db.playlists.delete({
             where: {
                 id: playlistId,
-                userId: req.user.id
+                userid: req.user.id
             }
         })
 
@@ -175,10 +193,10 @@ export const removeproblemFromPlaylist = async (req, res) => {
             })
         }
 
-        const deletedProblems = await db.problemsInPlaylist.deleteMany({
+        const deletedProblems = await db.problemInPlaylist.deleteMany({
             where: {
-                playlistId,
-                problemId: {
+                playlistid: playlistId,
+                problemid: {
                     in: problemId
                 }
             }
