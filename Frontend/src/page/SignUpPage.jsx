@@ -19,7 +19,7 @@ const SignUpPage = () => {
 
   const [showPassword , setShowPassword] = useState(false);
 
-  // const {signup , isSigninUp} = useAuthStore()
+  
 
   const {
     register,
@@ -154,19 +154,16 @@ const SignUpPage = () => {
           </div>
         </div>
       </div>
-
-       {/* Right Side - Image/Pattern */}
-      
-      
+      {/* Right Side - Image/Pattern */}
+            <AuthImagePattern
+              title={"Welcome to our platform!"}
+              subtitle={
+                "Sign up to access our platform and start using our services."
+              }
+              />
     </div>
 
-    {/* Right Side - Image/Pattern */}
-      <AuthImagePattern
-        title={"Welcome to our platform!"}
-        subtitle={
-          "Sign up to access our platform and start using our services."
-        }
-        />
+   
 </>
     
     
