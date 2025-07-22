@@ -1,63 +1,66 @@
-import { useEffect, useState } from 'react'
-import {Routes, Route, Navigate} from 'react-router-dom'
-import {Toaster} from "react-hot-toast"
-import HomePage from './page/HomePage'
-import SignUpPage from './page/SignUpPage'
-import LoginPage from './page/LoginPage'
-import { useAuthStore } from './store/useAuthStore'
-import {  Loader } from 'lucide-react'
-import Layout from './layout/Layout'
-
+import { useEffect, useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+import HomePage from "./page/HomePage";
+import SignUpPage from "./page/SignUpPage";
+import LoginPage from "./page/LoginPage";
+import { useAuthStore } from "./store/useAuthStore";
+import { Loader } from "lucide-react";
+import Layout from "./layout/Layout";
+import { negative } from "zod";
+import { AdminRoute } from "./components/AdminRoute";
+import { AddProblem } from "./page/AddProblem";
 
 function App() {
-  const  {authUser, cheackAuth, isCheackingAuth} =  useAuthStore()
+  const { authUser, cheackAuth, isCheackingAuth } = useAuthStore();
 
   useEffect(() => {
+    cheackAuth();
+  }, [cheackAuth]);
 
-    cheackAuth()
-
-  }, [cheackAuth])
-
-  if(isCheackingAuth && !authUser){
+  if (isCheackingAuth && !authUser) {
     return (
-      <div className='flex items-center justify-center h-screen'>
-        <Loader className = "size-10 animate-spin"/>
+      <div className="flex items-center justify-center h-screen">
+        <Loader className="size-10 animate-spin" />
       </div>
-    )
+    );
   }
-  
 
   return (
     <>
-     <div className='flex flex-col items-center justify-center text-4xl'>
-      <Toaster/>
-     <Routes>
+      <div className="flex flex-col items-center justify-center text-4xl">
+        <Toaster />
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route
+              index
+              element={authUser ? <HomePage /> : <Navigate to="/login" />}
+            />
+          </Route>
 
-      <Route path='/' element = {<Layout/>}>
+          <Route
+            path="/signup"
+            element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
+          />
 
-        <Route
-      index
-      element = {authUser ? <HomePage/> : <Navigate to = '/login'/>}
-      />
+          <Route
+            path="/login"
+            element={!authUser ? <LoginPage /> : <Navigate to="/" />}
+          />
 
-      </Route>
-     
+          <Route element = {<AdminRoute/>}>
+          <Route
+          path="/add-problem"
+          element ={authUser ? <AddProblem/> : <negative to= '/'/>}
+          >
 
-      <Route
-      path = '/signup'
-      element = {!authUser ? <SignUpPage/> : <Navigate to =  '/'/>}
-      />
+          </Route>
 
-     <Route
-     path ='/login'
-     element = {!authUser ? <LoginPage/> : <Navigate to = '/' /> }
-     />
-     
-     </Routes>
-
-     </div>
+          </Route>
+        </Routes>
+      </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
