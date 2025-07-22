@@ -17,7 +17,7 @@ const LoginSchema = z.object({
 
 const LoginPage = () => {
 
-  const {isLogginIn, Login} = useAuthStore()
+  const {isLoggingIn, login} = useAuthStore()
    
 
   const [showPassword , setShowPassword] = useState(false);
@@ -34,10 +34,10 @@ const LoginPage = () => {
 
   const onSubmit = async (data) => {
     try {
-      await Login (data)
+      await login(data)
 
     } catch (error) {
-          console.error("SignUp failed",  error);
+          console.error("Login failed",  error);
       
     }
   }
@@ -122,11 +122,11 @@ const LoginPage = () => {
             <button
               type="submit"
               className="btn btn-primary w-full"
-              disabled={isLogginIn}
+              disabled={isLoggingIn}
             >
-               {isLogginIn ? (
+               {isLoggingIn ? (
                 <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <Loader className="h-5 w-5 animate-spin" />
                   Loading...
                 </>
               ) : (
@@ -139,7 +139,7 @@ const LoginPage = () => {
           <div className="text-center">
             <p className="text-base-content/60">
               Don't have an account?{" "}
-              <Link to="/SignUp" className="link link-primary">
+              <Link to="/signup" className="link link-primary">
                 Sign Up
               </Link>
             </p>

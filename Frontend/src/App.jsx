@@ -5,7 +5,8 @@ import HomePage from './page/HomePage'
 import SignUpPage from './page/SignUpPage'
 import LoginPage from './page/LoginPage'
 import { useAuthStore } from './store/useAuthStore'
-import { Loader } from 'lucide-react'
+import {  Loader } from 'lucide-react'
+import Layout from './layout/Layout'
 
 
 function App() {
@@ -18,11 +19,11 @@ function App() {
   }, [cheackAuth])
 
   if(isCheackingAuth && !authUser){
-    <div className='flex items-center justify-center h-screen'>
-      <Loader className = "size-10 animate-spin"/>
-
-    </div>
-
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <Loader className = "size-10 animate-spin"/>
+      </div>
+    )
   }
   
 
@@ -30,12 +31,17 @@ function App() {
     <>
      <div className='flex flex-col items-center justify-center text-4xl'>
       <Toaster/>
-
      <Routes>
-      <Route
-      path = '/'
+
+      <Route path='/' element = {<Layout/>}>
+
+        <Route
+      index
       element = {authUser ? <HomePage/> : <Navigate to = '/login'/>}
       />
+
+      </Route>
+     
 
       <Route
       path = '/signup'
