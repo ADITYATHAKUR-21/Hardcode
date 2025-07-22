@@ -5,6 +5,7 @@ import HomePage from './page/HomePage'
 import SignUpPage from './page/SignUpPage'
 import LoginPage from './page/LoginPage'
 import { useAuthStore } from './store/useAuthStore'
+import { Loader } from 'lucide-react'
 
 
 function App() {
@@ -45,7 +46,6 @@ function App() {
      path ='/login'
      element = {!authUser ? <LoginPage/> : <Navigate to = '/' /> }
      />
-     
      
      </Routes>
 

@@ -5,6 +5,7 @@ import {Link} from 'react-router-dom'
 import {ChartArea, Code, Eye, EyeOff, Loader,Lock, Mail}  from 'lucide-react'
 import {email, z} from 'zod'
 import AuthImagePattern from '../components/AuthImagePattern'
+import { useAuthStore } from '../store/useAuthStore'
 
 
 
@@ -15,6 +16,8 @@ const LoginSchema = z.object({
 })
 
 const LoginPage = () => {
+
+  const {isLogginIn, Login} = useAuthStore()
    
 
   const [showPassword , setShowPassword] = useState(false);
@@ -30,7 +33,13 @@ const LoginPage = () => {
   })
 
   const onSubmit = async (data) => {
-    console.log(data);
+    try {
+      await Login (data)
+
+    } catch (error) {
+          console.error("SignUp failed",  error);
+      
+    }
   }
 
   return (
@@ -113,10 +122,16 @@ const LoginPage = () => {
             <button
               type="submit"
               className="btn btn-primary w-full"
-            
+              disabled={isLogginIn}
             >
-              Submit
-              
+               {isLogginIn ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                "Sign in"
+              )}
             </button>
           </form>
 
