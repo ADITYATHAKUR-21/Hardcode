@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { Loader } from 'lucide-react'
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuthStore} from '../store/useAuthStore'
 

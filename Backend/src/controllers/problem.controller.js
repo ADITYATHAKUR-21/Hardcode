@@ -59,7 +59,11 @@ try {
     }
   })
   
-  return res.status(200).json({message: "problem created successfully" })
+  return res.status(200).json({
+    success : true,
+    message: "problem created successfully",
+    problem : newProblem, 
+  });
   
 } catch (error) {
   console.error("error creating problem", error);

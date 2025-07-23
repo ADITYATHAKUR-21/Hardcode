@@ -17,7 +17,8 @@ import Editor from "@monaco-editor/react";
 import { useState } from "react";
 import { axiosInstance } from "../lib/Axios";
 import toast from "react-hot-toast";
-import { data, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/useAuthStore";
 
 const problemSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -514,7 +515,11 @@ public class Main {
 export const CreateProblemForm = () => {
 
   const [sampleType, setSampleType] = useState("DP")
-  const Nevigation = useNavigate();
+  const navigate = useNavigate();
+  const { authUser } = useAuthStore();
+
+  // Debug: Log current user
+  console.log('Current authenticated user:', authUser);
 
   const {register, control, handleSubmit, reset, formState : {errors}} = useForm({
     resolver: zodResolver(problemSchema),
@@ -562,7 +567,20 @@ export const CreateProblemForm = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const Onsubmit = async (value) => {
-    console.log(value);
+    try {
+      setIsLoading(true);
+      const res = await axiosInstance.post("/problems/create", value);
+      console.log('Response:', res.data);
+      toast.success(res.data.message || "Problem created successfully!");
+      navigate("/");
+      
+    } catch (error) {
+      console.error('Error creating problem:', error);
+      const errorMessage = error.response?.data?.message || error.message || "Error creating problem";
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   const loadSampleData = () => {
