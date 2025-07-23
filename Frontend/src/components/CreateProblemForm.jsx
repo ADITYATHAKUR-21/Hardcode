@@ -66,7 +66,6 @@ const problemSchema = z.object({
 
 const sampledpData = {
   title: "Climbing Stairs",
-  category: "dp", // Dynamic Programming
   description:
     "You are climbing a staircase. It takes n steps to reach the top. Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?",
   difficulty: "EASY",
@@ -521,7 +520,7 @@ export const CreateProblemForm = () => {
     resolver: zodResolver(problemSchema),
     defaultValues: {
       testcases: [{ input: "", output: "" }],
-      tags: [""],
+      tags: ["Google"],
       examples: {
         JAVASCRIPT: { input: "", output: "", explanation: "" },
         PYTHON: { input: "", output: "", explanation: "" },
@@ -566,14 +565,25 @@ export const CreateProblemForm = () => {
     console.log(value);
   }
 
-    const loadSampleData=()=>{
-      const sampleData = sampleType === "DP" ? sampledpData : sampleStringProblem
-    
-    replaceTags(sampleData.tags.map((tag) => tag));
+  const loadSampleData = () => {
+    try {
+      console.log('Current sampleType:', sampleType);
+      const sampleData = sampleType === "DP" ? sampledpData : sampleStringProblem;
+      console.log('Selected sample data:', sampleData);
+      
+      // Update field arrays first
+      replaceTags(sampleData.tags.map((tag) => tag));
       replacetestcases(sampleData.testcases.map((tc) => tc));
 
-    // Reset the form with sample data
+      // Reset the form with sample data
       reset(sampleData);
+      
+      console.log('Sample data loaded successfully');
+      toast.success(`${sampleType === "DP" ? "Dynamic Programming" : "String"} sample data loaded successfully!`);
+    } catch (error) {
+      console.error('Error loading sample data:', error);
+      toast.error('Failed to load sample data');
+    }
   }
 
   return (
@@ -593,7 +603,7 @@ export const CreateProblemForm = () => {
                   className={`btn join-item ${
                     sampleType === "DP" ? "btn-active" : ""
                   }`}
-                  onClick={() => setSampleType("array")}
+                  onClick={() => setSampleType("DP")}
                 >
                   DP Problem
                 </button>
