@@ -519,7 +519,7 @@ export const CreateProblemForm = () => {
   const { authUser } = useAuthStore();
 
   // Debug: Log current user
-  // console.log('Current authenticated user:', authUser);
+  console.log('Current authenticated user:', authUser);
 
   const {register, control, handleSubmit, reset, formState : {errors}} = useForm({
     resolver: zodResolver(problemSchema),
