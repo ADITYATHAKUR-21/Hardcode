@@ -1,60 +1,55 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/Axios";
 import { toast } from "react-hot-toast";
-import axios from "axios";
-
-export const useProblemStor = create (() => ({
-    problems: [],
-    problem: null,
-    solvedProblem: [],
-    isProblemsLoding: false,
-    isProblemLoding: false,
 
 
-    getAllProblem: async(set) => {
+export const useProblemStore = create((set) => ({
+  problems: [],
+  problem: null,
+  solvedProblem: [],
+  isProblemsLoading: false,
+  isProblemLoading: false,
 
-        set({isProblemsLoding: true});
-        try {
-            const res = await axiosInstance.get("/problems/get-All-problems");
-            set({problems: res.data.problems})
+  getAllProblems: async () => {
+    
+    try {
+      set({ isProblemsLoading : true });
+      const res = await axiosInstance.get("/problems/get-all-problems");
+      
+      if (res.data && res.data.problems) {
+        set({ problems: res.data.problems });
+      } else {
+        console.log("No problems data in response:", res.data);
+        toast.error("No problems found");
+        set({ problems: [] });
+      }
+    } catch (error) {
+      console.log("Error getting All problems ", error);
+      const errorMessage = error.response?.data?.message || "Failed to fetch problems";
+      toast.error(errorMessage);
+      set({ problems: [] });
+    } finally {
+      set({ isProblemsLoading: false });
+    }
+  },
 
-        
-            
-        } catch (error) {
-            console.log("Error geting All problems ", error);
-
-        }finally {
-             set({isProblemsLoding: false});
-
-        }
-
-    },
-
-    getProblemById: async(id) => {
-        set({isProblemLoding: ture});
-        try {
-            const res = axiosInstance.get(`/problems/get-problem/${id}`)
-            set({problem: (await res).data.problem})
-            
-        } catch (error) {
-            console.log("Error geting problem", error);
-            
-            
-        }finally{
-            set({isProblemLoding: false})
-        }
-    },
-    getSolvedProblem: async() => {
-        try {
-            const res = axiosInstance.get("/problems/get-solved-problems")
-        set({solvedProblem: (await res).data.problems})
-            
-        } catch (error) {
-            console.log("Error geting solved problem");
-            
-        
-        }
-    } 
-
+  getProblemById: async (id) => {
+    set({ isProblemLoading: true });
+    try {
+      const res = await axiosInstance.get(`/problems/get-problem/${id}`);
+      set({ problem: res.data.problem });
+    } catch (error) {
+      console.log("Error getting problem", error);
+    } finally {
+      set({ isProblemLoading: false });
+    }
+  },
+  getSolvedProblem: async () => {
+    try {
+      const res = await axiosInstance.get("/problems/get-solved-problems");
+      set({ solvedProblem: res.data.problems });
+    } catch (error) {
+      console.log("Error getting solved problem");
+    }
+  },
 }));
-

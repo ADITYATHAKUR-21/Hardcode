@@ -90,9 +90,9 @@ export const getAllproblems = async (req, res) => {
 
     }
     res.status(200).json({
-      sucess: true,
+      success: true,
       message: "problem fetched successfully",
-      problem
+      problems: problem
     })
     
   } catch (error) {
@@ -121,7 +121,7 @@ export const getProblemById = async (req, res) => {
 
     }
     res.status(200).json({
-      sucess: true,
+      success: true,
       message: "problem fetched successfully",
       problem
     })
