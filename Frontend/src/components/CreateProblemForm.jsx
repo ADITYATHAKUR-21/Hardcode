@@ -36,7 +36,7 @@ const problemSchema = z.object({
       })
     )
     .min(1, "At least one test case is required"),
-  examples: z.object({
+  example: z.object({
     JAVASCRIPT: z.object({
       input: z.string().min(1, "Input is required"),
       output: z.string().min(1, "Output is required"),
@@ -58,7 +58,7 @@ const problemSchema = z.object({
     PYTHON: z.string().min(1, "Python code snippet is required"),
     JAVA: z.string().min(1, "Java solution is required"),
   }),
-  referenceSolutions: z.object({
+  referencesSolutions: z.object({
     JAVASCRIPT: z.string().min(1, "JavaScript solution is required"),
     PYTHON: z.string().min(1, "Python solution is required"),
     JAVA: z.string().min(1, "Java solution is required"),
@@ -90,7 +90,7 @@ const sampledpData = {
       output: "5",
     },
   ],
-  examples: {
+  example: {
     JAVASCRIPT: {
       input: "n = 2",
       output: "2",
@@ -173,7 +173,7 @@ class Main {
   }
 }`,
   },
-  referenceSolutions: {
+  referencesSolutions: {
     JAVASCRIPT: `/**
 * @param {number} n
 * @return {number}
@@ -337,7 +337,7 @@ const sampleStringProblem = {
       output: "true",
     },
   ],
-  examples: {
+  example: {
     JAVASCRIPT: {
       input: 's = "A man, a plan, a canal: Panama"',
       output: "true",
@@ -418,7 +418,7 @@ public class Main {
 }
 `,
   },
-  referenceSolutions: {
+  referencesSolutions: {
     JAVASCRIPT: `/**
    * @param {string} s
    * @return {boolean}
@@ -519,14 +519,14 @@ export const CreateProblemForm = () => {
   const { authUser } = useAuthStore();
 
   // Debug: Log current user
-  console.log('Current authenticated user:', authUser);
+  // console.log('Current authenticated user:', authUser);
 
   const {register, control, handleSubmit, reset, formState : {errors}} = useForm({
     resolver: zodResolver(problemSchema),
     defaultValues: {
       testcases: [{ input: "", output: "" }],
       tags: ["Google"],
-      examples: {
+      example: {
         JAVASCRIPT: { input: "", output: "", explanation: "" },
         PYTHON: { input: "", output: "", explanation: "" },
         JAVA: { input: "", output: "", explanation: "" },
@@ -536,7 +536,7 @@ export const CreateProblemForm = () => {
         PYTHON: "def solution():\n    # Write your code here\n    pass",
         JAVA: "public class Solution {\n    public static void main(String[] args) {\n        // Write your code here\n    }\n}",
       },
-      referenceSolutions: {
+      referencesSolutions: {
         JAVASCRIPT: "// Add your reference solution here",
         PYTHON: "# Add your reference solution here",
         JAVA: "// Add your reference solution here",
@@ -575,7 +575,7 @@ export const CreateProblemForm = () => {
       navigate("/");
       
     } catch (error) {
-      console.error('Error creating problem:', error);
+      // console.error('Error creating problem:', error);
       const errorMessage = error.response?.data?.message || error.message || "Error creating problem";
       toast.error(errorMessage);
     } finally {
@@ -605,7 +605,7 @@ export const CreateProblemForm = () => {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-7xl">
+    <div className="container mx-auto py-8 px-4  max-w-7xl">
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body p-6 md:p-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 pb-4 border-b">
@@ -904,7 +904,7 @@ export const CreateProblemForm = () => {
                         </h4>
                         <div className="border rounded-md overflow-hidden">
                           <Controller
-                            name={`referenceSolutions.${language}`}
+                            name={`referencesSolutions.${language}`}
                             control={control}
                             render={({ field }) => (
                               <Editor
@@ -925,10 +925,10 @@ export const CreateProblemForm = () => {
                             )}
                           />
                         </div>
-                        {errors.referenceSolutions?.[language] && (
+                        {errors.referencesSolutions?.[language] && (
                           <div className="mt-2">
                             <span className="text-error text-sm">
-                              {errors.referenceSolutions[language].message}
+                              {errors.referencesSolutions[language].message}
                             </span>
                           </div>
                         )}
@@ -950,13 +950,13 @@ export const CreateProblemForm = () => {
                             </label>
                             <textarea
                               className="textarea textarea-bordered min-h-20 w-full p-3 resize-y"
-                              {...register(`examples.${language}.input`)}
+                              {...register(`example.${language}.input`)}
                               placeholder="Example input"
                             />
-                            {errors.examples?.[language]?.input && (
+                            {errors.example?.[language]?.input && (
                               <label className="label">
                                 <span className="label-text-alt text-error">
-                                  {errors.examples[language].input.message}
+                                  {errors.example[language].input.message}
                                 </span>
                               </label>
                             )}
@@ -969,13 +969,13 @@ export const CreateProblemForm = () => {
                             </label>
                             <textarea
                               className="textarea textarea-bordered min-h-20 w-full p-3 resize-y"
-                              {...register(`examples.${language}.output`)}
+                              {...register(`example.${language}.output`)}
                               placeholder="Example output"
                             />
-                            {errors.examples?.[language]?.output && (
+                            {errors.example?.[language]?.output && (
                               <label className="label">
                                 <span className="label-text-alt text-error">
-                                  {errors.examples[language].output.message}
+                                  {errors.example[language].output.message}
                                 </span>
                               </label>
                             )}
@@ -988,7 +988,7 @@ export const CreateProblemForm = () => {
                             </label>
                             <textarea
                               className="textarea textarea-bordered min-h-24 w-full p-3 resize-y"
-                              {...register(`examples.${language}.explanation`)}
+                              {...register(`example.${language}.explanation`)}
                               placeholder="Explain the example"
                             />
                           </div>
