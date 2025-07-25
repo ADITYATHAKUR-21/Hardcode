@@ -10,6 +10,7 @@ import Layout from "./layout/Layout";
 import { negative } from "zod";
 import { AdminRoute } from "./components/AdminRoute";
 import { AddProblem } from "./page/AddProblem";
+import ProblemPage from "./page/ProblemPage";
 
 function App() {
   const { authUser, cheackAuth, isCheackingAuth } = useAuthStore();
@@ -48,14 +49,17 @@ function App() {
             element={!authUser ? <LoginPage /> : <Navigate to="/" />}
           />
 
-          <Route element = {<AdminRoute/>}>
           <Route
-          path="/add-problem"
-          element ={authUser ? <AddProblem/> : <negative to= '/'/>}
-          >
+          path="/problem/:id"
+          element = {authUser ? <ProblemPage/> : <Navigate to='/'/>}
+          />
+          
 
-          </Route>
-
+          <Route element={<AdminRoute />}>
+            <Route
+              path="/add-problem"
+              element={authUser ? <AddProblem /> : <negative to="/" />}
+            ></Route>
           </Route>
         </Routes>
       </div>
