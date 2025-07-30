@@ -7,7 +7,6 @@ import LoginPage from "./page/LoginPage";
 import { useAuthStore } from "./store/useAuthStore";
 import { Loader } from "lucide-react";
 import Layout from "./layout/Layout";
-import { negative } from "zod";
 import { AdminRoute } from "./components/AdminRoute";
 import { AddProblem } from "./page/AddProblem";
 import ProblemPage from "./page/ProblemPage";
@@ -58,7 +57,7 @@ function App() {
           <Route element={<AdminRoute />}>
             <Route
               path="/add-problem"
-              element={authUser ? <AddProblem /> : <negative to="/" />}
+              element={authUser ? <AddProblem /> : <Navigate to="/" />}
             ></Route>
           </Route>
         </Routes>
