@@ -15,10 +15,10 @@ export const useExecutionStore = create((set)=>({
                 source_code,
                 language_id,
                 stdin,
-                expected_outputs,
-                problemId
+                exepected_outputs: expected_outputs,
+                problemid: problemId
             }));
-            const res = await axiosInstance.post("/execute-code" , { source_code, language_id, stdin, expected_outputs, problemId });
+            const res = await axiosInstance.post("/execute-code" , { source_code, language_id, stdin, exepected_outputs: expected_outputs, problemid: problemId });
 
             set({submission:res.data.submission});
       

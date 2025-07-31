@@ -13,7 +13,7 @@ const HomePage = () => {
     if (authUser) {
       getAllProblems();
     }
-  }, [authUser]);
+  }, [authUser, getAllProblems]);
 
   console.log(problems);
 

@@ -21,8 +21,8 @@ import { useProblemStore } from "../store/useProblemStore";
 import { getLanguageId } from "../lib/lang";
 import { useExecutionStore } from "../store/useExecutionStore";
 import { useSubmissionStore } from "../store/useSubmissionStore";
-// import Submission from "../components/Submission";
-// import SubmissionsList from "../components/SubmissionList";
+import Submission from "../components/Submission";
+import SubmissionsList from "../components/SubmissionList";
 
 const ProblemPage = () => {
   const { id } = useParams();
@@ -47,7 +47,7 @@ const ProblemPage = () => {
   useEffect(() => {
     getProblemById(id);
     getSubmissionCountForProblem(id);
-  }, [id]);
+  }, [id, getProblemById, getSubmissionCountForProblem]);
 
   useEffect(() => {
     if (problem) {
@@ -61,13 +61,13 @@ const ProblemPage = () => {
         })) || []
       );
     }
-  }, [problem, selectedLanguage]);
+  }, [problem, selectedLanguage, submission?.sourceCode]);
 
   useEffect(() => {
     if (activeTab === "submissions" && id) {
       getSubmissionForProblem(id);
     }
-  }, [activeTab, id]);
+  }, [activeTab, id, getSubmissionForProblem]);
 
   console.log("submission", submissions);
 
@@ -105,13 +105,16 @@ const ProblemPage = () => {
       case "description":
         return (
           <div className="prose max-w-none">
-            <p className="text-lg mb-6">{problem.description}</p>
+            <div 
+              className="text-lg mb-6 whitespace-pre-wrap leading-relaxed" 
+              dangerouslySetInnerHTML={{ __html: problem.description }}
+            />
 
             {problem.examples && (
               <>
                 <h3 className="text-xl font-bold mb-4">Examples:</h3>
                 {Object.entries(problem.examples).map(
-                  ([lang, example], idx) => (
+                  ([lang, example]) => (
                     <div
                       key={lang}
                       className="bg-base-200 p-6 rounded-xl mb-6 font-mono"

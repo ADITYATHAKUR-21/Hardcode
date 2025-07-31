@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Link } from "react-router-dom";
 
-import { Bookmark, PencilIcon, Trash, TrashIcon, Plus } from "lucide-react";
+import { Bookmark, PencilIcon, TrashIcon, Plus } from "lucide-react";
 
 const ProblemsTable = ({ problems }) => {
   const { authUser } = useAuthStore();
@@ -44,16 +44,18 @@ const ProblemsTable = ({ problems }) => {
   }, [filteredProblems, currentPage]);
 
   const handleDelete = (id) => {
-    onDeleteProblem(id);
+    // TODO: Implement delete functionality
+    console.log('Delete problem:', id);
   };
 
-  const handleCreatePlaylist = async (data) => {
-    await createPlaylist(data);
+  const handleCreatePlaylist = async () => {
+    // TODO: Implement create playlist functionality
+    console.log('Create playlist');
   };
 
   const handleAddToPlaylist = (problemId) => {
-    setSelectedProblemId(problemId);
-    setIsAddToPlaylistModalOpen(true);
+    // TODO: Implement add to playlist functionality
+    console.log('Add to playlist:', problemId);
   };
 
   return (
@@ -61,7 +63,7 @@ const ProblemsTable = ({ problems }) => {
       <div className="w-full max-w-6xl mt-10 mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Problems</h2>
-          <button className="btn btn-primary gap-2" onClick={() => {}}>
+          <button className="btn btn-primary gap-2" onClick={handleCreatePlaylist}>
             <Plus className="w-4 h-4" />
             Create Playlist
           </button>

@@ -49,7 +49,7 @@ export const useProblemStore = create((set) => ({
       const res = await axiosInstance.get("/problems/get-solved-problems");
       set({ solvedProblem: res.data.problems });
     } catch (error) {
-      console.log("Error getting solved problem");
+      console.log("Error getting solved problem", error);
     }
   },
 }));

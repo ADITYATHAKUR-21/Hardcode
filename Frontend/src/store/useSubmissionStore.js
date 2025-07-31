@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { axiosInstance } from "../lib/Axios";
 import toast from "react-hot-toast";
 
-export const useSubmissionStore = create((set, get) => ({
+export const useSubmissionStore = create((set) => ({
   isLoading: false,
   submissions: [],
   submission: null,
